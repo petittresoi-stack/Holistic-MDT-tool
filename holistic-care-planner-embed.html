@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holistic Care Planner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background-color: #f8fafc;
+      min-height: 100vh;
+      color: #1f2937;
+    }
+    /* Embed mode - add ?embed=true to URL */
+    body.embed-mode {
+      background-color: transparent;
+    }
+    body.embed-mode .header {
+      display: none;
+    }
+    body.embed-mode .container {
+      padding: 10px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #FF5722;
+    }
+    .badge {
+      display: inline-block;
+      background-color: #fef3c7;
+      color: #92400e;
+      padding: 4px 16px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 28px;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      color: #4b5563;
+      font-size: 16px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      background: #e2e8f0;
+    }
+    .tab.active {
+      background: #FF5722;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Input Form */
+    .input-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .input-section h2 {
+      font-size: 18px;
+      color: #1f2937;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #FF5722;
+      box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #FF5722;
+    }
+    .help-text {
+      font-size: 11px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    /* Generate Button */
+    .generate-btn {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #FF8A65 0%, #FF5722 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+    }
+
+    /* Results Section */
+    .results-section {
+      display: none;
+    }
+    .results-section.visible {
+      display: block;
+    }
+
+    /* Mindmap Container */
+    .mindmap-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      position: relative;
+      min-height: 500px;
+    }
+    .mindmap-svg {
+      width: 100%;
+      height: 500px;
+    }
+    .center-node {
+      cursor: pointer;
+    }
+    .branch-node {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .branch-node:hover {
+      transform: scale(1.05);
+    }
+
+    /* Connections Panel */
+    .connections-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .connections-section h2 {
+      font-size: 18px;
+      color: #1f2937;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .connection-card {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid;
+    }
+    .connection-card h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .connection-card p {
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .connection-card .key-question {
+      background: #fffbeb;
+      border-left: 3px solid #fbbf24;
+      padding: 10px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #92400e;
+      font-weight: 500;
+    }
+
+    /* Professionals Section */
+    .professionals-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .professionals-section h2 {
+      font-size: 18px;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+    .prof-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .prof-card {
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .prof-card.overlooked {
+      background-color: #fffbeb;
+      border: 2px solid #fbbf24;
+    }
+    .prof-card.standard {
+      background-color: #f5f5f5;
+      border: 1px solid #e0e0e0;
+    }
+    .prof-card .role {
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .overlooked-tag {
+      background-color: #f59e0b;
+      color: white;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .prof-card .setting {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .prof-card .why {
+      color: #374151;
+      line-height: 1.4;
+    }
+
+    /* Discussion Prompts */
+    .prompts-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .prompts-section h2 {
+      font-size: 18px;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+    .prompts-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+    }
+    .prompt-item {
+      background: #f1f5f9;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #475569;
+      border-left: 3px solid #64748b;
+    }
+
+    /* Export Buttons */
+    .export-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .export-btn {
+      padding: 12px 24px;
+      border: 2px solid #FF5722;
+      background: white;
+      color: #FF5722;
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .export-btn:hover {
+      background: #FF5722;
+      color: white;
+    }
+
+    /* Detail Panel */
+    .detail-panel {
+      display: none;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+      border-top: 5px solid #FF5722;
+    }
+    .detail-panel.visible {
+      display: block;
+    }
+    .detail-panel h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    .close-panel {
+      float: right;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      color: #64748b;
+    }
+    .close-panel:hover {
+      background: #e2e8f0;
+    }
+
+    .default-box {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .default-box h3 {
+      font-size: 13px;
+      font-weight: bold;
+      color: #991b1b;
+      margin-bottom: 6px;
+    }
+    .default-box p {
+      font-size: 13px;
+      color: #b91c1c;
+    }
+    .reframe-box {
+      background-color: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .reframe-box h3 {
+      font-size: 13px;
+      font-weight: bold;
+      color: #115e59;
+      margin-bottom: 6px;
+    }
+    .reframe-box p {
+      font-size: 13px;
+      color: #0f766e;
+    }
+
+    /* Print styles */
+    @media print {
+      body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .tabs, .generate-btn, .export-buttons, .input-section { display: none !important; }
+      .results-section { display: block !important; }
+      .container { max-width: 100%; padding: 10px; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .tabs {
+        flex-wrap: wrap;
+      }
+      .tab {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">Holistic Care Planner</div>
+      <h1>MDT Discussion Tool</h1>
+      <p class="subtitle">See the whole person. Challenge default pathways. Consider who else can help.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="input">1. Enter Patient Information</button>
+      <button class="tab" data-tab="results">2. View Holistic Plan</button>
+    </div>
+
+    <!-- INPUT TAB -->
+    <div id="input-tab" class="tab-content active">
+      
+      <!-- Basic Information -->
+      <div class="input-section">
+        <h2>👤 Basic Information</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Name (or pseudonym)</label>
+            <input type="text" id="name" placeholder="e.g., Joe">
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="e.g., 56">
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender">
+              <option value="">Select...</option>
+              <option value="man">Man</option>
+              <option value="woman">Woman</option>
+              <option value="non-binary">Non-binary</option>
+              <option value="other">Other/Prefer to self-describe</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ethnicity">Ethnicity</label>
+            <input type="text" id="ethnicity" placeholder="e.g., White British, Black Caribbean">
+          </div>
+        </div>
+      </div>
+
+      <!-- Neurotype & Diagnoses -->
+      <div class="input-section">
+        <h2>🧠 Neurotype & Diagnoses</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Neurotype</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="autistic"> Autistic
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="adhd"> ADHD/Polyennic
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="dyslexic"> Dyslexic
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="dyspraxic"> Dyspraxic
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="learning-disability"> Learning Disability
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Mental Health Diagnoses</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="ocd"> OCD
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="anxiety"> Anxiety
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="depression"> Depression
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="ptsd"> PTSD
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="personality-disorder"> Personality Disorder
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="eating-disorder"> Eating Disorder
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="other-diagnoses">Other diagnoses (physical health, etc.)</label>
+            <textarea id="other-diagnoses" placeholder="e.g., diabetes, chronic pain, epilepsy"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="diagnosis-fit">Do any diagnoses seem like a poor fit?</label>
+            <textarea id="diagnosis-fit" placeholder="e.g., OCD diagnosis doesn't seem to match their experiences"></textarea>
+            <span class="help-text">This helps identify potential misdiagnosis or pathologising of neurotype differences</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiences & History -->
+      <div class="input-section">
+        <h2>📖 Experiences & History</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Life experiences (tick all that apply)</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="trauma"> Trauma
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="bullying"> Bullying
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="exclusion"> Social exclusion
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="late-diagnosis"> Late diagnosis/identification
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="masking"> History of masking
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="burnout"> Burnout
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="failed-therapy"> Previous therapy hasn't helped
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Self-injury considerations</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="self-harm"> Self-harm reported/suspected
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="harmful-stim"> Self-regulatory behaviour that causes harm (e.g., hitting, scratching, biting self)
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="unclear-injury"> Unclear whether self-harm or harmful stim
+              </label>
+            </div>
+            <span class="help-text">Distinguishing between intentional self-harm and regulatory behaviours that have become harmful is crucial – they need different support</span>
+          </div>
+          <div class="form-group">
+            <label for="experience-details">Details about experiences</label>
+            <textarea id="experience-details" placeholder="e.g., in and out of psychiatric hospitals, therapy never seems to help"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="presentation">Current presentation/reason for contact</label>
+            <textarea id="presentation" placeholder="e.g., anxiety crisis, self-harm, situational mutism"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- What Helps -->
+      <div class="input-section">
+        <h2>✨ What Helps This Person</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Known helpful factors (tick all that apply)</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="routine"> Predictability & routine
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="quiet"> Quiet environments
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="dim-lights"> Dim lighting
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="written-info"> Written information in advance
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="same-staff"> Consistency (same staff)
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="processing-time"> Processing time
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="interests"> Engaging with interests
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="aac"> Alternative communication (AAC)
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="interests-detail">Interests/passions</label>
+            <textarea id="interests-detail" placeholder="e.g., Sunderland Football Club, anime, trains"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="other-helps">Other things that help</label>
+            <textarea id="other-helps" placeholder="e.g., partner provides predictability at home, specific calming video"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication -->
+      <div class="input-section">
+        <h2>💬 Communication</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Communication considerations</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="situational-mutism"> Situational mutism (loses speech when stressed)
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="non-speaking"> Non-speaking/minimally speaking
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="concrete-language"> Needs concrete/literal language
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="eye-contact"> Eye contact is difficult
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="interoception"> Interoception differences (difficulty recognising body signals)
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="communication-tools">Communication tools/methods that work</label>
+            <textarea id="communication-tools" placeholder="e.g., text-to-speech app, writing, pictures"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setting -->
+      <div class="input-section">
+        <h2>🏥 Current Setting</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="setting">Where is this person being seen?</label>
+            <select id="setting">
+              <option value="">Select...</option>
+              <option value="ae">A&E / Emergency</option>
+              <option value="gp">GP Surgery</option>
+              <option value="mh-ward">Mental Health Ward</option>
+              <option value="community">Community Mental Health</option>
+              <option value="crisis">Crisis Team</option>
+              <option value="outpatient">Outpatient Clinic</option>
+              <option value="ld-service">Learning Disability Service</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="previous-contact">Previous contact with services</label>
+            <textarea id="previous-contact" placeholder="e.g., multiple admissions, therapy hasn't helped before"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button class="generate-btn" onclick="generatePlan()">
+        Generate Holistic Care Plan →
+      </button>
+    </div>
+
+    <!-- RESULTS TAB -->
+    <div id="results-tab" class="tab-content">
+      <div class="results-section" id="results-content">
+        
+        <!-- Patient Summary -->
+        <div class="input-section" id="patient-summary">
+          <h2>📋 <span id="summary-name">Patient</span>'s Summary</h2>
+          <p id="summary-text"></p>
+        </div>
+
+        <!-- Detail Panel (appears when clicking nodes) -->
+        <div class="detail-panel" id="detail-panel">
+          <button class="close-panel" onclick="closeDetailPanel()">×</button>
+          <div id="detail-content"></div>
+        </div>
+
+        <!-- Mindmap -->
+        <div class="mindmap-container">
+          <h2 style="margin-bottom: 12px;">🗺️ Holistic View</h2>
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Click any element to see details, reframes, and professionals</p>
+          <svg id="mindmap-svg" class="mindmap-svg"></svg>
+        </div>
+
+        <!-- Connections -->
+        <div class="connections-section" id="connections-section">
+          <h2>🔗 Connections to Consider</h2>
+          <div id="connections-content"></div>
+        </div>
+
+        <!-- Professionals -->
+        <div class="professionals-section" id="professionals-section">
+          <h2>👥 Professionals to Consider</h2>
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Based on this person's specific combination of needs</p>
+          <div class="prof-grid" id="professionals-content"></div>
+        </div>
+
+        <!-- Discussion Prompts -->
+        <div class="prompts-section" id="prompts-section">
+          <h2>💬 MDT Discussion Prompts</h2>
+          <div class="prompts-list" id="prompts-content"></div>
+        </div>
+
+        <!-- Export -->
+        <div class="export-buttons">
+          <button class="export-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+          <button class="export-btn" onclick="copyToClipboard()">📋 Copy Summary</button>
+          <button class="export-btn" onclick="startNew()">🔄 Start New</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check for embed mode
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('embed') === 'true') {
+      document.body.classList.add('embed-mode');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+      });
+    });
+
+    // Data structures
+    let patientData = {};
+    let generatedElements = [];
+    let generatedConnections = [];
+    let generatedProfessionals = [];
+    let generatedPrompts = [];
+
+    // Color palette for elements
+    const colors = {
+      demographics: '#1565C0',
+      neurotype: '#C62828',
+      diagnosis: '#EF6C00',
+      experiences: '#5D4037',
+      helps: '#00838F',
+      communication: '#7B1FA2',
+      physical: '#37474F',
+      presentation: '#D32F2F'
+    };
+
+    // Professional database
+    const professionalDatabase = {
+      ot: {
+        role: 'Occupational Therapist',
+        setting: 'Community',
+        overlooked: true,
+        triggers: ['autistic', 'routine', 'sensory', 'daily-living', 'interoception', 'burnout'],
+        contribution: 'Can assess sensory needs, daily routines, and environment. Helps build sustainable structures and advises the team on working WITH the person\'s needs rather than against them.'
+      },
+      slt: {
+        role: 'Speech and Language Therapist',
+        setting: 'Community',
+        overlooked: true,
+        triggers: ['communication', 'situational-mutism', 'non-speaking', 'aac'],
+        contribution: 'Can assess communication needs and advise the team on how to communicate effectively (concrete language, processing time, AAC options, written backup).'
+      },
+      psychologist: {
+        role: 'Clinical Psychologist',
+        setting: 'Psychology Service',
+        overlooked: false,
+        triggers: ['trauma', 'diagnosis-query', 'late-diagnosis', 'formulation'],
+        contribution: 'Can provide neurodivergent-informed formulation, support processing of late identification, and help reframe experiences. Essential for questioning whether diagnoses fit.'
+      },
+      psychiatrist: {
+        role: 'Psychiatrist (neurodivergent-informed)',
+        setting: 'Secondary Care',
+        overlooked: false,
+        triggers: ['medication', 'diagnosis-query', 'ocd', 'anxiety', 'depression'],
+        contribution: 'Can review whether current diagnoses and medications are appropriate, or whether they\'re treating something that doesn\'t need treating.'
+      },
+      trauma_therapist: {
+        role: 'Trauma Therapist (with neurodivergent adaptations)',
+        setting: 'IAPT / Secondary MH',
+        overlooked: false,
+        triggers: ['trauma', 'bullying', 'ptsd'],
+        contribution: 'Can deliver trauma therapy with adaptations: concrete language, predictable session structure, sensory considerations, no forced eye contact.'
+      },
+      peer_support: {
+        role: 'Peer Support Worker',
+        setting: 'VCSE / Community',
+        overlooked: false,
+        triggers: ['late-diagnosis', 'isolation', 'validation', 'autistic', 'learning-disability'],
+        contribution: 'Lived experience support from someone who understands. Can provide validation, reduce isolation, and help with identity and self-understanding.'
+      },
+      advocate: {
+        role: 'Advocate',
+        setting: 'VCSE',
+        overlooked: false,
+        triggers: ['communication', 'power-imbalance', 'trauma', 'learning-disability'],
+        contribution: 'Can support the person to have their voice heard in meetings and appointments, reducing power imbalances.'
+      },
+      autism_specialist: {
+        role: 'Autism Specialist Nurse/Practitioner',
+        setting: 'Community',
+        overlooked: false,
+        triggers: ['autistic', 'reasonable-adjustments'],
+        contribution: 'Can advise the whole team on reasonable adjustments and autism-informed approaches across all care.'
+      },
+      ld_nurse: {
+        role: 'Learning Disability Liaison Nurse',
+        setting: 'Acute Hospital / Community',
+        overlooked: true,
+        triggers: ['learning-disability', 'hospital', 'communication'],
+        contribution: 'Can ensure reasonable adjustments are in place across healthcare settings and support communication.'
+      },
+      care_coordinator: {
+        role: 'Care Coordinator',
+        setting: 'Community MH',
+        overlooked: false,
+        triggers: ['multiple-services', 'consistency', 'routine'],
+        contribution: 'Can ensure consistency across services: same appointment times, advance notice of changes, coordination between professionals.'
+      },
+      dietitian: {
+        role: 'Dietitian (with ARFID/sensory awareness)',
+        setting: 'Community / Outpatient',
+        overlooked: true,
+        triggers: ['eating-disorder', 'sensory', 'autistic'],
+        contribution: 'Can assess eating patterns with understanding of sensory sensitivities and ARFID, rather than assuming typical eating disorder presentations.'
+      },
+      physio: {
+        role: 'Physiotherapist',
+        setting: 'Community',
+        overlooked: true,
+        triggers: ['physical-health', 'chronic-pain', 'interoception'],
+        contribution: 'Can support physical health needs with awareness of interoception differences and sensory considerations.'
+      },
+      ot_sensory: {
+        role: 'Occupational Therapist (Sensory Assessment)',
+        setting: 'Community',
+        overlooked: true,
+        triggers: ['harmful-stim', 'sensory-crisis', 'dysregulation'],
+        contribution: 'Essential for harmful stims. Can assess sensory profile, identify triggers, suggest safer alternatives for regulation, and advise on environmental modifications to reduce dysregulation.'
+      },
+      crisis_team: {
+        role: 'Crisis Team',
+        setting: 'Community MH',
+        overlooked: false,
+        triggers: ['self-harm', 'crisis', 'acute-risk'],
+        contribution: 'For genuine self-harm with risk, can provide intensive short-term support. However, should be aware that not all self-injury in neurodivergent people is traditional self-harm.'
+      },
+      positive_behaviour: {
+        role: 'Positive Behaviour Support Practitioner',
+        setting: 'Community / LD Services',
+        overlooked: true,
+        triggers: ['harmful-stim', 'learning-disability', 'behaviour-support'],
+        contribution: 'Can conduct functional analysis of behaviour – understanding what need the behaviour is meeting – and develop support plans that address root causes rather than just suppressing behaviour.'
+      }
+    };
+
+    // Connection templates
+    const connectionTemplates = [
+      {
+        id: 'ocd-routine',
+        requires: ['autistic', 'ocd'],
+        from: 'OCD diagnosis',
+        to: 'Need for routine',
+        color: '#FF6F00',
+        label: 'Same thing?',
+        note: 'What\'s been labelled "OCD" may actually reflect monotropism – an Autistic cognitive style where deep focus on specific things brings regulation and comfort. This isn\'t a disorder to be treated; it may be how this person\'s brain works best.',
+        keyQuestion: 'Should we be treating the "OCD", or supporting the routine needs?'
+      },
+      {
+        id: 'ocd-neurotype',
+        requires: ['autistic', 'ocd'],
+        from: 'OCD diagnosis',
+        to: 'Autistic neurotype',
+        color: '#D84315',
+        label: 'Misdiagnosis?',
+        note: 'OCD is a common misdiagnosis for Autistic people. Repetitive behaviours, need for sameness, and distress when routines are disrupted can look like OCD through a non-Autistic lens – but serve different functions.',
+        keyQuestion: 'Is this OCD, or is this autism being pathologised?'
+      },
+      {
+        id: 'trauma-neurotype',
+        requires: ['autistic', 'trauma'],
+        from: 'Trauma experiences',
+        to: 'Autistic neurotype',
+        color: '#6D4C41',
+        label: 'Connected',
+        note: 'Many Autistic people experience trauma precisely because they are Autistic – through bullying, social exclusion, being forced to mask, and living in environments not designed for them. The trauma may be inseparable from the Autistic experience.',
+        keyQuestion: 'Can we address the trauma without understanding the Autistic experience?'
+      },
+      {
+        id: 'anxiety-neurotype',
+        requires: ['autistic', 'anxiety'],
+        from: 'Anxiety',
+        to: 'Autistic neurotype',
+        color: '#7B1FA2',
+        label: 'Root cause?',
+        note: 'Anxiety in Autistic people often has specific, identifiable causes: sensory overwhelm, unpredictability, communication barriers, masking exhaustion. It may reduce significantly when the environment is adapted rather than when the person is "treated".',
+        keyQuestion: 'Is this anxiety a disorder, or a reasonable response to an unsuitable environment?'
+      },
+      {
+        id: 'pd-trauma',
+        requires: ['personality-disorder', 'trauma'],
+        from: 'Personality Disorder diagnosis',
+        to: 'Trauma experiences',
+        color: '#8D6E63',
+        label: 'Reframe?',
+        note: 'Personality Disorder diagnoses are increasingly understood as trauma responses rather than fixed personality traits. This is especially important for neurodivergent people whose differences may have been pathologised.',
+        keyQuestion: 'Is this a "personality disorder" or an understandable response to difficult experiences?'
+      },
+      {
+        id: 'pd-neurotype',
+        requires: ['autistic', 'personality-disorder'],
+        from: 'Personality Disorder diagnosis',
+        to: 'Autistic neurotype',
+        color: '#AD1457',
+        label: 'Misdiagnosis?',
+        note: 'Many Autistic people, particularly women and those assigned female at birth, receive Personality Disorder diagnoses before their autism is recognised. Emotional dysregulation, relationship difficulties, and identity confusion can all be Autistic experiences.',
+        keyQuestion: 'Is this PD, or unrecognised/unsupported autism?'
+      },
+      {
+        id: 'eating-sensory',
+        requires: ['eating-disorder', 'autistic'],
+        from: 'Eating difficulties',
+        to: 'Sensory needs',
+        color: '#00695C',
+        label: 'ARFID?',
+        note: 'Eating difficulties in Autistic people often relate to sensory sensitivities (textures, smells, temperatures) rather than body image concerns. This may be ARFID (Avoidant/Restrictive Food Intake Disorder) rather than anorexia/bulimia.',
+        keyQuestion: 'Is this about body image, or sensory experience of food?'
+      },
+      {
+        id: 'failed-therapy',
+        requires: ['autistic', 'failed-therapy'],
+        from: 'Previous therapy hasn\'t helped',
+        to: 'Autistic neurotype',
+        color: '#455A64',
+        label: 'Wrong approach?',
+        note: 'If therapy has repeatedly not helped, it may be because the therapeutic approach wasn\'t adapted for Autistic people, or because the underlying issue was incorrectly identified. Standard approaches often don\'t work without modification.',
+        keyQuestion: 'Was the therapy adapted? Was the problem correctly identified?'
+      },
+      {
+        id: 'late-diagnosis-impact',
+        requires: ['autistic', 'late-diagnosis'],
+        from: 'Late identification',
+        to: 'Mental health',
+        color: '#1565C0',
+        label: 'Impact',
+        note: 'Late identification often means years of not understanding oneself, developing extensive masking, experiencing burnout, and internalising negative messages. This has profound mental health impacts that need acknowledgement.',
+        keyQuestion: 'Have we acknowledged how much late identification has shaped this person\'s life?'
+      },
+      {
+        id: 'interoception-physical',
+        requires: ['autistic', 'interoception'],
+        from: 'Interoception differences',
+        to: 'Physical health',
+        color: '#37474F',
+        label: 'Hidden needs',
+        note: 'Difficulty recognising internal body signals (pain, hunger, illness) means physical health conditions may go unnoticed or be reported in atypical ways. Clinicians need to ask specific, concrete questions.',
+        keyQuestion: 'Are we asking the right questions to uncover physical health needs?'
+      },
+      {
+        id: 'adhd-anxiety',
+        requires: ['adhd', 'anxiety'],
+        from: 'ADHD/Polyennic',
+        to: 'Anxiety',
+        color: '#FF6F00',
+        label: 'RSD?',
+        note: 'Rejection Sensitive Dysphoria (intense emotional response to perceived rejection) is common in ADHD and can present as anxiety. The anxiety may be specifically social/relational rather than generalised.',
+        keyQuestion: 'Is this generalised anxiety, or specifically about rejection/criticism?'
+      },
+      {
+        id: 'selfharm-stim',
+        requires: ['autistic', 'unclear-injury'],
+        from: 'Self-injury',
+        to: 'Autistic neurotype',
+        color: '#D32F2F',
+        label: 'Stim or self-harm?',
+        note: 'Self-regulatory behaviours (stims) can sometimes cause physical harm – but this is fundamentally different from intentional self-harm. The person may not want to hurt themselves; the harm is an unwanted side effect of a sensory/regulatory need. These require completely different approaches.',
+        keyQuestion: 'Is this intentional self-harm, or a regulatory behaviour that has become harmful? What function does it serve?'
+      },
+      {
+        id: 'harmfulstim-sensory',
+        requires: ['autistic', 'harmful-stim'],
+        from: 'Harmful stim',
+        to: 'Sensory/regulatory needs',
+        color: '#E65100',
+        label: 'Dysregulation?',
+        note: 'When stimming becomes harmful, it often indicates the person is severely dysregulated – usually due to environmental stressors (sensory overload, unpredictability, communication barriers, masking exhaustion). The solution is addressing the triggers, not stopping the behaviour.',
+        keyQuestion: 'What environmental or sensory triggers are causing this level of dysregulation? Can we address those?'
+      },
+      {
+        id: 'harmfulstim-environment',
+        requires: ['harmful-stim'],
+        from: 'Harmful stim',
+        to: 'Environment',
+        color: '#BF360C',
+        label: 'Triggers?',
+        note: 'Harmful self-regulatory behaviours often intensify when something in the environment changes – increased demands, sensory stressors, loss of routine, communication breakdown. The behaviour is a symptom, not the problem.',
+        keyQuestion: 'What changed recently? What was happening before/around the behaviour?'
+      },
+      {
+        id: 'selfharm-trauma',
+        requires: ['self-harm', 'trauma'],
+        from: 'Self-harm',
+        to: 'Trauma',
+        color: '#880E4F',
+        label: 'Coping?',
+        note: 'Self-harm is often a way of coping with overwhelming emotional pain, including trauma responses. For neurodivergent people, trauma may be specifically linked to their neurodivergent experiences (bullying, masking, invalidation).',
+        keyQuestion: 'Is the self-harm a trauma response? Has trauma-informed support been offered?'
+      },
+      {
+        id: 'selfharm-communication',
+        requires: ['self-harm', 'communication'],
+        from: 'Self-harm',
+        to: 'Communication',
+        color: '#AD1457',
+        label: 'Expressing distress?',
+        note: 'For people who struggle to communicate verbally, self-harm may be a way of expressing distress that they cannot put into words. This doesn\'t make it "just attention seeking" – it means we need to find other ways for them to communicate their needs.',
+        keyQuestion: 'Does this person have adequate ways to communicate distress? Have we provided alternatives?'
+      }
+    ];
+
+    // Generate the plan
+    function generatePlan() {
+      // Collect data
+      patientData = {
+        name: document.getElementById('name').value || 'This person',
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        ethnicity: document.getElementById('ethnicity').value,
+        autistic: document.getElementById('autistic').checked,
+        adhd: document.getElementById('adhd').checked,
+        dyslexic: document.getElementById('dyslexic').checked,
+        dyspraxic: document.getElementById('dyspraxic').checked,
+        learningDisability: document.getElementById('learning-disability').checked,
+        ocd: document.getElementById('ocd').checked,
+        anxiety: document.getElementById('anxiety').checked,
+        depression: document.getElementById('depression').checked,
+        ptsd: document.getElementById('ptsd').checked,
+        personalityDisorder: document.getElementById('personality-disorder').checked,
+        eatingDisorder: document.getElementById('eating-disorder').checked,
+        otherDiagnoses: document.getElementById('other-diagnoses').value,
+        diagnosisFit: document.getElementById('diagnosis-fit').value,
+        trauma: document.getElementById('trauma').checked,
+        bullying: document.getElementById('bullying').checked,
+        exclusion: document.getElementById('exclusion').checked,
+        lateDiagnosis: document.getElementById('late-diagnosis').checked,
+        masking: document.getElementById('masking').checked,
+        burnout: document.getElementById('burnout').checked,
+        failedTherapy: document.getElementById('failed-therapy').checked,
+        selfHarm: document.getElementById('self-harm').checked,
+        harmfulStim: document.getElementById('harmful-stim').checked,
+        unclearInjury: document.getElementById('unclear-injury').checked,
+        experienceDetails: document.getElementById('experience-details').value,
+        presentation: document.getElementById('presentation').value,
+        routine: document.getElementById('routine').checked,
+        quiet: document.getElementById('quiet').checked,
+        dimLights: document.getElementById('dim-lights').checked,
+        writtenInfo: document.getElementById('written-info').checked,
+        sameStaff: document.getElementById('same-staff').checked,
+        processingTime: document.getElementById('processing-time').checked,
+        interests: document.getElementById('interests').checked,
+        aac: document.getElementById('aac').checked,
+        interestsDetail: document.getElementById('interests-detail').value,
+        otherHelps: document.getElementById('other-helps').value,
+        situationalMutism: document.getElementById('situational-mutism').checked,
+        nonSpeaking: document.getElementById('non-speaking').checked,
+        concreteLang: document.getElementById('concrete-language').checked,
+        eyeContact: document.getElementById('eye-contact').checked,
+        interoception: document.getElementById('interoception').checked,
+        communicationTools: document.getElementById('communication-tools').value,
+        setting: document.getElementById('setting').value,
+        previousContact: document.getElementById('previous-contact').value
+      };
+
+      // Generate elements for mindmap
+      generateElements();
+      
+      // Generate connections
+      generateConnections();
+      
+      // Generate professionals
+      generateProfessionals();
+      
+      // Generate discussion prompts
+      generateDiscussionPrompts();
+
+      // Render everything
+      renderSummary();
+      renderMindmap();
+      renderConnections();
+      renderProfessionals();
+      renderPrompts();
+
+      // Switch to results tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-tab="results"]').classList.add('active');
+      document.getElementById('results-tab').classList.add('active');
+      document.getElementById('results-content').classList.add('visible');
+      
+      // Notify parent window if embedded
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'planGenerated', name: patientData.name }, '*');
+      }
+    }
+
+    function generateElements() {
+      generatedElements = [];
+      
+      // Demographics
+      let demoText = [];
+      if (patientData.age) demoText.push(patientData.age + ' years old');
+      if (patientData.gender) demoText.push(patientData.gender);
+      if (patientData.ethnicity) demoText.push(patientData.ethnicity);
+      if (demoText.length > 0) {
+        generatedElements.push({
+          id: 'demographics',
+          label: 'Demographics',
+          detail: demoText.join(', '),
+          color: colors.demographics,
+          category: 'demographics'
+        });
+      }
+
+      // Neurotype
+      let neurotypes = [];
+      if (patientData.autistic) neurotypes.push('Autistic');
+      if (patientData.adhd) neurotypes.push('ADHD/Polyennic');
+      if (patientData.dyslexic) neurotypes.push('Dyslexic');
+      if (patientData.dyspraxic) neurotypes.push('Dyspraxic');
+      if (patientData.learningDisability) neurotypes.push('Learning Disability');
+      if (neurotypes.length > 0) {
+        generatedElements.push({
+          id: 'neurotype',
+          label: 'Neurotype',
+          detail: neurotypes.join(', '),
+          color: colors.neurotype,
+          category: 'neurotype'
+        });
+      }
+
+      // MH Diagnoses
+      let mhDiagnoses = [];
+      if (patientData.ocd) mhDiagnoses.push('OCD');
+      if (patientData.anxiety) mhDiagnoses.push('Anxiety');
+      if (patientData.depression) mhDiagnoses.push('Depression');
+      if (patientData.ptsd) mhDiagnoses.push('PTSD');
+      if (patientData.personalityDisorder) mhDiagnoses.push('Personality Disorder');
+      if (patientData.eatingDisorder) mhDiagnoses.push('Eating Disorder');
+      if (mhDiagnoses.length > 0) {
+        generatedElements.push({
+          id: 'mh-diagnoses',
+          label: 'MH Diagnoses',
+          detail: mhDiagnoses.join(', '),
+          color: colors.diagnosis,
+          category: 'diagnosis',
+          queryFit: patientData.diagnosisFit
+        });
+      }
+
+      // Experiences
+      let experiences = [];
+      if (patientData.trauma) experiences.push('Trauma');
+      if (patientData.bullying) experiences.push('Bullying');
+      if (patientData.exclusion) experiences.push('Social exclusion');
+      if (patientData.lateDiagnosis) experiences.push('Late identification');
+      if (patientData.masking) experiences.push('Masking history');
+      if (patientData.burnout) experiences.push('Burnout');
+      if (patientData.failedTherapy) experiences.push('Previous therapy unhelpful');
+      if (experiences.length > 0 || patientData.experienceDetails) {
+        generatedElements.push({
+          id: 'experiences',
+          label: 'Life Experiences',
+          detail: experiences.length > 0 ? experiences.join(', ') : patientData.experienceDetails.substring(0, 50),
+          color: colors.experiences,
+          category: 'experiences'
+        });
+      }
+
+      // Self-injury (separate element for visibility)
+      let injuryInfo = [];
+      if (patientData.selfHarm) injuryInfo.push('Self-harm reported');
+      if (patientData.harmfulStim) injuryInfo.push('Harmful stim/regulatory behaviour');
+      if (patientData.unclearInjury) injuryInfo.push('Unclear if self-harm or stim');
+      if (injuryInfo.length > 0) {
+        generatedElements.push({
+          id: 'self-injury',
+          label: 'Self-Injury',
+          detail: injuryInfo.join(', '),
+          color: '#D32F2F',
+          category: 'self-injury',
+          needsDistinction: patientData.unclearInjury || (patientData.selfHarm && patientData.autistic)
+        });
+      }
+
+      // What helps
+      let helps = [];
+      if (patientData.routine) helps.push('Predictability & routine');
+      if (patientData.quiet) helps.push('Quiet environments');
+      if (patientData.dimLights) helps.push('Dim lighting');
+      if (patientData.writtenInfo) helps.push('Written info in advance');
+      if (patientData.sameStaff) helps.push('Same staff');
+      if (patientData.processingTime) helps.push('Processing time');
+      if (patientData.interests) helps.push('Engaging with interests');
+      if (patientData.aac) helps.push('Alternative communication');
+      if (helps.length > 0 || patientData.interestsDetail || patientData.otherHelps) {
+        generatedElements.push({
+          id: 'helps',
+          label: 'What Helps',
+          detail: helps.slice(0, 3).join(', ') + (helps.length > 3 ? '...' : ''),
+          color: colors.helps,
+          category: 'helps',
+          fullList: helps
+        });
+      }
+
+      // Communication
+      let commNeeds = [];
+      if (patientData.situationalMutism) commNeeds.push('Situational mutism');
+      if (patientData.nonSpeaking) commNeeds.push('Non-speaking/minimally speaking');
+      if (patientData.concreteLang) commNeeds.push('Needs concrete language');
+      if (patientData.eyeContact) commNeeds.push('Eye contact difficult');
+      if (patientData.interoception) commNeeds.push('Interoception differences');
+      if (commNeeds.length > 0 || patientData.communicationTools) {
+        generatedElements.push({
+          id: 'communication',
+          label: 'Communication',
+          detail: commNeeds.slice(0, 2).join(', ') + (commNeeds.length > 2 ? '...' : ''),
+          color: colors.communication,
+          category: 'communication',
+          fullList: commNeeds
+        });
+      }
+
+      // Current presentation
+      if (patientData.presentation) {
+        generatedElements.push({
+          id: 'presentation',
+          label: 'Current Presentation',
+          detail: patientData.presentation.substring(0, 40) + (patientData.presentation.length > 40 ? '...' : ''),
+          color: colors.presentation,
+          category: 'presentation'
+        });
+      }
+    }
+
+    function generateConnections() {
+      generatedConnections = [];
+      
+      // Check each connection template
+      connectionTemplates.forEach(template => {
+        let matches = true;
+        template.requires.forEach(req => {
+          if (req === 'autistic' && !patientData.autistic) matches = false;
+          if (req === 'adhd' && !patientData.adhd) matches = false;
+          if (req === 'ocd' && !patientData.ocd) matches = false;
+          if (req === 'anxiety' && !patientData.anxiety) matches = false;
+          if (req === 'depression' && !patientData.depression) matches = false;
+          if (req === 'trauma' && !patientData.trauma) matches = false;
+          if (req === 'ptsd' && !patientData.ptsd) matches = false;
+          if (req === 'personality-disorder' && !patientData.personalityDisorder) matches = false;
+          if (req === 'eating-disorder' && !patientData.eatingDisorder) matches = false;
+          if (req === 'late-diagnosis' && !patientData.lateDiagnosis) matches = false;
+          if (req === 'failed-therapy' && !patientData.failedTherapy) matches = false;
+          if (req === 'interoception' && !patientData.interoception) matches = false;
+          if (req === 'self-harm' && !patientData.selfHarm) matches = false;
+          if (req === 'harmful-stim' && !patientData.harmfulStim) matches = false;
+          if (req === 'unclear-injury' && !patientData.unclearInjury) matches = false;
+          if (req === 'communication' && !(patientData.situationalMutism || patientData.nonSpeaking)) matches = false;
+        });
+        if (matches) {
+          generatedConnections.push(template);
+        }
+      });
+    }
+
+    function generateProfessionals() {
+      generatedProfessionals = [];
+      let triggers = new Set();
+
+      // Collect all triggers based on patient data
+      if (patientData.autistic) triggers.add('autistic');
+      if (patientData.adhd) triggers.add('adhd');
+      if (patientData.learningDisability) triggers.add('learning-disability');
+      if (patientData.routine) triggers.add('routine');
+      if (patientData.quiet || patientData.dimLights) triggers.add('sensory');
+      if (patientData.interoception) triggers.add('interoception');
+      if (patientData.burnout) triggers.add('burnout');
+      if (patientData.situationalMutism || patientData.nonSpeaking || patientData.aac) {
+        triggers.add('communication');
+        triggers.add('situational-mutism');
+        triggers.add('aac');
+      }
+      if (patientData.trauma || patientData.bullying) triggers.add('trauma');
+      if (patientData.ptsd) triggers.add('ptsd');
+      if (patientData.diagnosisFit) triggers.add('diagnosis-query');
+      if (patientData.lateDiagnosis) triggers.add('late-diagnosis');
+      if (patientData.ocd || patientData.anxiety || patientData.depression) triggers.add('medication');
+      if (patientData.eatingDisorder) triggers.add('eating-disorder');
+      if (patientData.otherDiagnoses) triggers.add('physical-health');
+      if (patientData.setting === 'ae' || patientData.setting === 'mh-ward') triggers.add('hospital');
+      if (patientData.selfHarm) {
+        triggers.add('self-harm');
+        triggers.add('crisis');
+        triggers.add('acute-risk');
+      }
+      if (patientData.harmfulStim) {
+        triggers.add('harmful-stim');
+        triggers.add('sensory-crisis');
+        triggers.add('dysregulation');
+        triggers.add('behaviour-support');
+      }
+      if (patientData.unclearInjury) {
+        triggers.add('harmful-stim');
+        triggers.add('self-harm');
+        triggers.add('sensory-crisis');
+      }
+      if (patientData.learningDisability) triggers.add('behaviour-support');
+
+      // Match professionals
+      Object.values(professionalDatabase).forEach(prof => {
+        let matchCount = 0;
+        prof.triggers.forEach(t => {
+          if (triggers.has(t)) matchCount++;
+        });
+        if (matchCount > 0) {
+          generatedProfessionals.push({
+            ...prof,
+            relevance: matchCount
+          });
+        }
+      });
+
+      // Sort by relevance then by overlooked status
+      generatedProfessionals.sort((a, b) => {
+        if (a.overlooked && !b.overlooked) return -1;
+        if (!a.overlooked && b.overlooked) return 1;
+        return b.relevance - a.relevance;
+      });
+    }
+
+    function generateDiscussionPrompts() {
+      generatedPrompts = [];
+      
+      // Always include holistic question
+      generatedPrompts.push('Are we seeing ' + patientData.name + ' holistically, or treating each "problem" in isolation?');
+      
+      // Diagnosis-specific prompts
+      if (patientData.diagnosisFit) {
+        generatedPrompts.push('Have we considered whether all current diagnoses fit ' + patientData.name + '\'s actual experiences?');
+      }
+      if (patientData.ocd && patientData.autistic) {
+        generatedPrompts.push('Is the "OCD" actually monotropism – an Autistic need for sameness and routine that shouldn\'t be pathologised?');
+      }
+      if (patientData.personalityDisorder && patientData.autistic) {
+        generatedPrompts.push('Could the Personality Disorder diagnosis be unrecognised autism or trauma responses?');
+      }
+      
+      // Therapy prompts
+      if (patientData.failedTherapy) {
+        generatedPrompts.push('If previous therapy hasn\'t helped, was it adapted for ' + patientData.name + '\'s neurotype? Was the underlying issue correctly identified?');
+      }
+      
+      // Professional prompts
+      if (patientData.autistic || patientData.routine) {
+        generatedPrompts.push('Have we considered Occupational Therapy to support daily routines and sensory needs?');
+      }
+      if (patientData.situationalMutism || patientData.nonSpeaking) {
+        generatedPrompts.push('Have we consulted Speech and Language Therapy about communication support?');
+      }
+      
+      // Environment prompts
+      if (patientData.routine || patientData.sameStaff) {
+        generatedPrompts.push('Are we providing consistency – same staff, same appointment times, advance notice of any changes?');
+      }
+      if (patientData.writtenInfo) {
+        generatedPrompts.push('Are we providing written information before appointments and meetings?');
+      }
+      
+      // Person-centred prompts
+      generatedPrompts.push('Have we asked ' + patientData.name + ' what works for them?');
+      if (patientData.interestsDetail) {
+        generatedPrompts.push('How can we incorporate ' + patientData.name + '\'s interests (' + patientData.interestsDetail.substring(0, 30) + ') into their care?');
+      }
+      
+      // Late diagnosis
+      if (patientData.lateDiagnosis) {
+        generatedPrompts.push('Have we acknowledged the impact of ' + patientData.name + ' not knowing about their neurotype for much of their life?');
+      }
+      
+      // Trauma
+      if (patientData.trauma && patientData.autistic) {
+        generatedPrompts.push('Is ' + patientData.name + ' regulated enough for trauma work, or do they need environmental stability first?');
+      }
+      
+      // Self-harm vs harmful stim
+      if (patientData.unclearInjury || (patientData.selfHarm && patientData.autistic)) {
+        generatedPrompts.push('Is this intentional self-harm, or a self-regulatory behaviour (stim) that has become harmful? These need completely different approaches.');
+        generatedPrompts.push('What function does this behaviour serve for ' + patientData.name + '? Emotional release, or sensory regulation?');
+      }
+      if (patientData.harmfulStim) {
+        generatedPrompts.push('What environmental or sensory triggers might be causing ' + patientData.name + ' to become so dysregulated that their stim has become harmful?');
+        generatedPrompts.push('Have we referred to OT for a sensory assessment to understand the triggers and find safer alternatives?');
+        generatedPrompts.push('What changed recently that might have increased ' + patientData.name + '\'s dysregulation?');
+      }
+      if (patientData.selfHarm && (patientData.situationalMutism || patientData.nonSpeaking)) {
+        generatedPrompts.push('Does ' + patientData.name + ' have adequate ways to communicate distress? Could the self-harm be a way of expressing something they cannot say?');
+      }
+    }
+
+    function renderSummary() {
+      document.getElementById('summary-name').textContent = patientData.name;
+      
+      let summary = patientData.name;
+      if (patientData.age) summary += ' is ' + patientData.age + ' years old';
+      if (patientData.autistic) summary += ', Autistic';
+      if (patientData.adhd) summary += ', ADHD/Polyennic';
+      if (patientData.learningDisability) summary += ', with a Learning Disability';
+      summary += '.';
+      
+      if (patientData.presentation) {
+        summary += ' Current presentation: ' + patientData.presentation + '.';
+      }
+      
+      document.getElementById('summary-text').textContent = summary;
+    }
+
+    function renderMindmap() {
+      const svg = document.getElementById('mindmap-svg');
+      const width = svg.clientWidth || 800;
+      const height = 500;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const branchLength = 120;
+
+      svg.innerHTML = '';
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      // Calculate positions
+      const angleStep = (2 * Math.PI) / generatedElements.length;
+      
+      // Draw branch lines
+      generatedElements.forEach((el, i) => {
+        const angle = angleStep * i - Math.PI / 2;
+        const endX = centerX + (branchLength + 50) * Math.cos(angle);
+        const endY = centerY + (branchLength + 50) * Math.sin(angle);
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', centerX);
+        line.setAttribute('y1', centerY);
+        line.setAttribute('x2', endX);
+        line.setAttribute('y2', endY);
+        line.setAttribute('stroke', el.color);
+        line.setAttribute('stroke-width', '3');
+        line.setAttribute('opacity', '0.4');
+        svg.appendChild(line);
+      });
+
+      // Draw center node
+      const centerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      centerGroup.setAttribute('class', 'center-node');
+      
+      const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      centerCircle.setAttribute('cx', centerX);
+      centerCircle.setAttribute('cy', centerY);
+      centerCircle.setAttribute('r', '55');
+      centerCircle.setAttribute('fill', 'url(#centerGradient)');
+      
+      // Add gradient
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+      gradient.setAttribute('id', 'centerGradient');
+      gradient.setAttribute('x1', '0%');
+      gradient.setAttribute('y1', '0%');
+      gradient.setAttribute('x2', '100%');
+      gradient.setAttribute('y2', '100%');
+      const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      stop1.setAttribute('offset', '0%');
+      stop1.setAttribute('stop-color', '#FF8A65');
+      const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      stop2.setAttribute('offset', '100%');
+      stop2.setAttribute('stop-color', '#FF5722');
+      gradient.appendChild(stop1);
+      gradient.appendChild(stop2);
+      defs.appendChild(gradient);
+      svg.appendChild(defs);
+      
+      centerGroup.appendChild(centerCircle);
+      
+      const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      centerText.setAttribute('x', centerX);
+      centerText.setAttribute('y', centerY + 6);
+      centerText.setAttribute('text-anchor', 'middle');
+      centerText.setAttribute('fill', 'white');
+      centerText.setAttribute('font-size', '20');
+      centerText.setAttribute('font-weight', 'bold');
+      centerText.setAttribute('font-family', 'Georgia, serif');
+      centerText.textContent = patientData.name.length > 10 ? patientData.name.substring(0, 10) + '...' : patientData.name;
+      centerGroup.appendChild(centerText);
+      
+      svg.appendChild(centerGroup);
+
+      // Draw branch nodes
+      generatedElements.forEach((el, i) => {
+        const angle = angleStep * i - Math.PI / 2;
+        const x = centerX + (branchLength + 100) * Math.cos(angle);
+        const y = centerY + (branchLength + 100) * Math.sin(angle);
+        
+        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        group.setAttribute('class', 'branch-node');
+        group.setAttribute('data-id', el.id);
+        group.onclick = () => showElementDetail(el);
+        
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x - 70);
+        rect.setAttribute('y', y - 30);
+        rect.setAttribute('width', '140');
+        rect.setAttribute('height', '60');
+        rect.setAttribute('rx', '8');
+        rect.setAttribute('fill', 'white');
+        rect.setAttribute('stroke', el.color);
+        rect.setAttribute('stroke-width', '3');
+        group.appendChild(rect);
+        
+        // Color bar
+        const colorBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        colorBar.setAttribute('x', x - 70);
+        colorBar.setAttribute('y', y - 30);
+        colorBar.setAttribute('width', '6');
+        colorBar.setAttribute('height', '60');
+        colorBar.setAttribute('fill', el.color);
+        colorBar.setAttribute('rx', '3');
+        group.appendChild(colorBar);
+        
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', x);
+        label.setAttribute('y', y - 8);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('fill', el.color);
+        label.setAttribute('font-size', '12');
+        label.setAttribute('font-weight', 'bold');
+        label.setAttribute('font-family', 'Georgia, serif');
+        label.textContent = el.label;
+        group.appendChild(label);
+        
+        const detail = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        detail.setAttribute('x', x);
+        detail.setAttribute('y', y + 10);
+        detail.setAttribute('text-anchor', 'middle');
+        detail.setAttribute('fill', '#4b5563');
+        detail.setAttribute('font-size', '10');
+        detail.setAttribute('font-family', 'Georgia, serif');
+        detail.textContent = el.detail.length > 20 ? el.detail.substring(0, 20) + '...' : el.detail;
+        group.appendChild(detail);
+        
+        svg.appendChild(group);
+      });
+    }
+
+    function showElementDetail(element) {
+      const panel = document.getElementById('detail-panel');
+      const content = document.getElementById('detail-content');
+      
+      let html = `<h2 style="color: ${element.color};">${element.label}</h2>`;
+      html += `<p style="color: #4b5563; margin-bottom: 16px;">${element.detail}</p>`;
+      
+      // Add category-specific content
+      if (element.category === 'diagnosis' && element.queryFit) {
+        html += `
+          <div class="default-box">
+            <h3>⚠️ Diagnosis query noted</h3>
+            <p>${element.queryFit}</p>
+          </div>
+          <div class="reframe-box">
+            <h3>🔄 Questions to consider</h3>
+            <p>Does this diagnosis fully capture ${patientData.name}'s experiences? Might some of what's been labelled as a disorder actually be a neurotype difference that needs support rather than treatment?</p>
+          </div>
+        `;
+      }
+      
+      if (element.category === 'helps' && element.fullList) {
+        html += `<p style="margin-bottom: 12px;"><strong>Full list:</strong> ${element.fullList.join(', ')}</p>`;
+        if (patientData.interestsDetail) {
+          html += `<p><strong>Interests:</strong> ${patientData.interestsDetail}</p>`;
+        }
+      }
+      
+      if (element.category === 'communication' && element.fullList) {
+        html += `<p style="margin-bottom: 12px;"><strong>Communication needs:</strong> ${element.fullList.join(', ')}</p>`;
+        if (patientData.communicationTools) {
+          html += `<p><strong>Tools that work:</strong> ${patientData.communicationTools}</p>`;
+        }
+      }
+      
+      if (element.category === 'self-injury') {
+        html += `
+          <div class="reframe-box" style="background-color: #fff3e0; border-color: #ffcc80;">
+            <h3 style="color: #e65100;">⚠️ Critical distinction needed</h3>
+            <p style="color: #f57c00;">Self-harm and harmful stimming look similar but are fundamentally different:</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
+            <div style="background: #ffebee; padding: 12px; border-radius: 8px; border-left: 4px solid #c62828;">
+              <h4 style="color: #c62828; margin-bottom: 6px; font-size: 13px;">Self-Harm</h4>
+              <ul style="font-size: 12px; color: #b71c1c; padding-left: 16px; margin: 0;">
+                <li>Intentional injury</li>
+                <li>Often about emotional pain/release</li>
+                <li>May be linked to trauma, distress</li>
+                <li>Person may feel shame/hide it</li>
+                <li>Needs MH support, crisis care</li>
+              </ul>
+            </div>
+            <div style="background: #fff3e0; padding: 12px; border-radius: 8px; border-left: 4px solid #ef6c00;">
+              <h4 style="color: #ef6c00; margin-bottom: 6px; font-size: 13px;">Harmful Stim</h4>
+              <ul style="font-size: 12px; color: #e65100; padding-left: 16px; margin: 0;">
+                <li>Regulatory behaviour gone harmful</li>
+                <li>About sensory regulation</li>
+                <li>Intensifies with environmental stress</li>
+                <li>Person may not want to hurt themselves</li>
+                <li>Needs OT, sensory assessment, environment change</li>
+              </ul>
+            </div>
+          </div>
+          <div class="default-box">
+            <h3>Key questions to ask:</h3>
+            <p>• What function does this behaviour serve?<br>
+            • Does it increase when sensory/environmental stressors increase?<br>
+            • Does ${patientData.name} want to hurt themselves, or is the harm unwanted?<br>
+            • What was happening before/around the behaviour?</p>
+          </div>
+        `;
+      }
+      
+      content.innerHTML = html;
+      panel.style.borderTopColor = element.color;
+      panel.classList.add('visible');
+    }
+
+    function closeDetailPanel() {
+      document.getElementById('detail-panel').classList.remove('visible');
+    }
+
+    function renderConnections() {
+      const container = document.getElementById('connections-content');
+      
+      if (generatedConnections.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; font-style: italic;">No specific connections identified based on the information provided.</p>';
+        return;
+      }
+      
+      let html = '';
+      generatedConnections.forEach(conn => {
+        html += `
+          <div class="connection-card" style="border-color: ${conn.color};">
+            <h3 style="color: ${conn.color};">${conn.from} ↔ ${conn.to}: ${conn.label}</h3>
+            <p>${conn.note}</p>
+            <div class="key-question">💬 ${conn.keyQuestion}</div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function renderProfessionals() {
+      const container = document.getElementById('professionals-content');
+      
+      if (generatedProfessionals.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; font-style: italic;">Enter more patient information to see recommended professionals.</p>';
+        return;
+      }
+      
+      let html = '';
+      generatedProfessionals.forEach(prof => {
+        html += `
+          <div class="prof-card ${prof.overlooked ? 'overlooked' : 'standard'}">
+            <div class="role">
+              ${prof.role}
+              ${prof.overlooked ? '<span class="overlooked-tag">Often overlooked</span>' : ''}
+            </div>
+            <div class="setting">${prof.setting}</div>
+            <div class="why">${prof.contribution}</div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function renderPrompts() {
+      const container = document.getElementById('prompts-content');
+      
+      let html = '';
+      generatedPrompts.forEach(prompt => {
+        html += `<div class="prompt-item">• ${prompt}</div>`;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function copyToClipboard() {
+      let text = `HOLISTIC CARE PLAN: ${patientData.name}\n\n`;
+      text += `Summary: ${document.getElementById('summary-text').textContent}\n\n`;
+      
+      text += `CONNECTIONS TO CONSIDER:\n`;
+      generatedConnections.forEach(c => {
+        text += `- ${c.from} ↔ ${c.to}: ${c.keyQuestion}\n`;
+      });
+      
+      text += `\nPROFESSIONALS TO CONSIDER:\n`;
+      generatedProfessionals.forEach(p => {
+        text += `- ${p.role} (${p.setting})${p.overlooked ? ' [Often overlooked]' : ''}\n`;
+      });
+      
+      text += `\nDISCUSSION PROMPTS:\n`;
+      generatedPrompts.forEach(p => {
+        text += `- ${p}\n`;
+      });
+      
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Summary copied to clipboard!');
+      });
+    }
+
+    function startNew() {
+      // Reset form
+      document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => el.value = '');
+      document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+      document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+      
+      // Switch to input tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-tab="input"]').classList.add('active');
+      document.getElementById('input-tab').classList.add('active');
+      document.getElementById('results-content').classList.remove('visible');
+    }
+  </script>
+</body>
+</html>
