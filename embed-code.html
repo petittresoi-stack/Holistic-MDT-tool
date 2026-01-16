@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holistic Care Planner - Embed Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .section h2 {
+      color: #FF5722;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .code-block {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    .iframe-container {
+      border: 2px dashed #FF5722;
+      padding: 10px;
+      margin: 20px 0;
+      background-color: #fafafa;
+    }
+    .note {
+      background-color: #fff3cd;
+      border-left: 4px solid #FF5722;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Holistic Care Planner - Embedding Guide</h1>
+    
+    <div class="section">
+      <h2>📌 Quick Embed</h2>
+      <p>Copy and paste the iframe code below into your website:</p>
+      
+      <div class="code-block">
+&lt;iframe 
+  src="https://[YOUR-DOMAIN]/holistic-care-planner-embed.html?embed=true"
+  width="100%"
+  height="800"
+  frameborder="0"
+  style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+  allow="clipboard-write"
+  title="Holistic Care Planner"&gt;
+&lt;/iframe&gt;
+      </div>
+
+      <div class="note">
+        <strong>⚠️ Important:</strong> Replace <code>[YOUR-DOMAIN]</code> with the actual domain where you're hosting the holistic-care-planner-embed.html file.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🎨 Responsive Embed</h2>
+      <p>For a responsive iframe that adjusts to screen size:</p>
+      
+      <div class="code-block">
+&lt;div style="position: relative; width: 100%; max-width: 1400px; margin: 0 auto;"&gt;
+  &lt;iframe 
+    src="https://[YOUR-DOMAIN]/holistic-care-planner-embed.html?embed=true"
+    width="100%"
+    height="900"
+    frameborder="0"
+    style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+    allow="clipboard-write"
+    title="Holistic Care Planner"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Embed Parameters</h2>
+      <p>The tool supports the following query parameter:</p>
+      
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background-color: #f8f8f8; border-bottom: 1px solid #ddd;">
+          <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+          <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Value</th>
+          <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Effect</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="padding: 10px; border: 1px solid #ddd;"><code>embed</code></td>
+          <td style="padding: 10px; border: 1px solid #ddd;"><code>true</code></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">Hides the header, reduces padding, and uses transparent background</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>📋 Full Example Page</h2>
+      <p>Here's how you might embed this on your website:</p>
+      
+      <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;My Website - Holistic Care Planner&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .tool-container { max-width: 1400px; margin: 0 auto; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="header"&gt;
+    &lt;h1&gt;Healthcare Team Planning Tool&lt;/h1&gt;
+    &lt;p&gt;Explore holistic care planning options&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;div class="tool-container"&gt;
+    &lt;iframe 
+      src="https://[YOUR-DOMAIN]/holistic-care-planner-embed.html?embed=true"
+      width="100%"
+      height="900"
+      frameborder="0"
+      style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+      allow="clipboard-write"
+      title="Holistic Care Planner"&gt;
+    &lt;/iframe&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔒 CORS and Hosting Considerations</h2>
+      <ul>
+        <li><strong>Same Domain:</strong> If both your site and the tool are on the same domain, no special configuration is needed.</li>
+        <li><strong>Cross-Domain:</strong> Ensure your server sends appropriate CORS headers if hosting on a different domain.</li>
+        <li><strong>Clipboard Access:</strong> The iframe includes <code>allow="clipboard-write"</code> to enable the "Copy to Clipboard" feature.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🎯 Customization</h2>
+      <p>You can customize the iframe appearance using inline CSS:</p>
+      
+      <div class="code-block">
+&lt;!-- Custom dimensions --&gt;
+&lt;iframe 
+  src="https://[YOUR-DOMAIN]/holistic-care-planner-embed.html?embed=true"
+  width="100%"
+  height="1000"
+  frameborder="0"
+  style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e0e0e0;"
+  allow="clipboard-write"&gt;
+&lt;/iframe&gt;
+      </div>
+
+      <div class="note">
+        <strong>Height Note:</strong> Adjust the height attribute based on your needs. Typical values range from 800-1200px.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✅ Testing Your Embed</h2>
+      <ol>
+        <li>Host the <code>holistic-care-planner-embed.html</code> file on your web server</li>
+        <li>Update the src URL in the iframe code with your actual domain</li>
+        <li>Paste the iframe code into your website's HTML</li>
+        <li>Test all functionality (form submission, tab switching, copy to clipboard)</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
